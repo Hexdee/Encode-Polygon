@@ -5,7 +5,7 @@ Deploy, mint and verify an NFT contract on polygon blockchain
 ## Minted NFT
 
 The verified contract can be found [here](https://mumbai.polygonscan.com/address/0x94C6cb95d0e5753337613194b7813CE728004716)
-Here's also a link to view the minted NFTs on [opensea](https://testnets.opensea.io/collection/tigers-3anzaiwuum)
+Here's also a link to view the minted NFTs on [opensea](https://testnets.opensea.io/collection/tigers-hfslqgb6bo)
 
 ## Usage
 
