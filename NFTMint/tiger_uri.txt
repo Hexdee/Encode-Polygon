@@ -1,0 +1,7 @@
+kingtiger uri: ipfs://bafyreieqsbzmdrooibpfpwrrprqe5izwpij6oqvfrylt6btnvyyta2hlzm/metadata.json
+cutetiger uri: ipfs://bafyreigmlhvcr3lp75lptcpyjnan7eb4piymejr56ommeczhodndl2nm4u/metadata.json
+badtiger uri: ipfs://bafyreibyvtwlxxaihkrw4i6ioathzh7gkoyupjicwjh7ayhjymeloualke/metadata.json
+rebeltiger uri: ipfs://bafyreihhuu3pygi2pmbexo4jgrxnveikt2qqgugdanktpptztvhta7r2yu/metadata.json
+blacktiger uri: ipfs://bafyreic6ixfmx7bvnfftdv5zlpces2nm6tgquszqqtgsyndkdq735bb3bu/metadata.json
+deviltiger uri: ipfs://bafyreig6bucitn4kmz7gw3enbe2u7ibj2ofo6crootnxh57nqeizhvjaea/metadata.json
+ninjatiger uri: ipfs://bafyreibtek5dzfgifqj5ppall7nnvtjiwgpy3vz5fzpoyatl3zbgxwfrdy/metadata.json
