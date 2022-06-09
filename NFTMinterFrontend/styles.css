@@ -1,0 +1,131 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *::after, *::before {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: ghostwhite;
+    /* color: tomato; */
+}
+
+header {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* background-color: lightgray; */
+    border-bottom: 1px solid lightgray;
+    color: blue;
+}
+
+button {
+    padding: 16px 32px;
+    border-radius: 16px;
+    background-color: blue;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    border: 0;
+}
+
+button:hover {
+    background-color: orange;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+form {
+    margin: 16px auto;
+    max-width: 350px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+/* 
+.container {
+    margin: 64px;
+    border: 2px solid blue;
+    width: 600px;
+} */
+
+label {
+    align-self: flex-start;
+}
+
+input[type=text], input[type=file] {
+    width: 100%;
+    padding: 12px 20px;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 50%;
+    background-color: blue;
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    padding: 12px 16px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: orange;
+}
+
+#display_image {
+    width: 70%;
+    height: 211px;
+    background-position: center;
+    background-size: cover;
+    border: 2px solid blue;
+    border-radius: 8px;
+    margin: 16px;
+    padding: 8px;
+}
+
+
+footer {
+    border-top: 1px solid lightgray;
+    display: flex;
+    justify-content: center;
+}
+
+main .signer {
+    color: white;
+}
+
+.tomato {
+    color: orange;
+}
+
+#status, link {
+    margin-top: -16px;
+}
+
+/* 
+.counter-buttons .App-button:hover {
+  background-color: #282c34;
+  color: white;
+} */
