@@ -16,6 +16,9 @@ body {
 }
 
 header {
+    position: fixed;
+    background-color: #ccc;
+    width: 100%;
     padding: 0 16px;
     display: flex;
     align-items: center;
@@ -40,6 +43,7 @@ button:hover {
 }
 
 main {
+    margin-top: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -107,9 +111,14 @@ input[type=submit]:hover {
 
 
 footer {
+    background-color: #ccc;
     border-top: 1px solid lightgray;
     display: flex;
     justify-content: center;
+}
+
+#disconnect {
+    display: none;
 }
 
 main .signer {
@@ -120,12 +129,11 @@ main .signer {
     color: orange;
 }
 
-#status, link {
+#status {
     margin-top: -16px;
+    font-size: 14px;
 }
 
-/* 
-.counter-buttons .App-button:hover {
-  background-color: #282c34;
-  color: white;
-} */
+#explorer {
+    margin-top: -20px;
+}

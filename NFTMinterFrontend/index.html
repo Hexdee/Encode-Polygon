@@ -10,7 +10,8 @@
 <body>
     <header>
         <h1 class='title'>NFT <span class="tomato">M</span>inter</h1>
-            <button class='App-button' id="connect"  onclick="ethereum.request({ method: 'eth_requestAccounts' })">Connect Wallet</button>
+            <button class='App-button' id="connect">Connect Wallet</button>
+            <button class='App-button' id="disconnect">Disconnect</button>            
     </header>
     <main>
         <div class="container">
@@ -24,7 +25,8 @@
             <input type="text" id="description" placeholder="Enter description">
             <input type="submit" value="Mint">
             <p id="status"></p>
-            <a id="link"></a>
+            <a id="explorer"></a>
+            <a id="opensea"></a>
             <!-- <button onclick="mint()">Mint</button> -->
         </form></div>
     </main>
@@ -33,7 +35,7 @@
     <script type="module">
         import { NFTStorage, File } from "https://cdn.jsdelivr.net/npm/nft.storage/dist/bundle.esm.min.js";
         
-        var nftAddress = '0xe3375f31006c34A5764E1B5BBC23f924140e3AAe';
+        var nftAddress = '0x72ff11f547dc72ac4bc2452090c2fe7215e06129';
         const provider = new ethers.providers.Web3Provider(window.ethereum)
         var nftAbi = [
             {
@@ -64,14 +66,28 @@
             }
         ];
 
-        document.getElementById('connect').addEventListener('click', async() => {
-            // await provider.send("eth_requestAccounts", [])
-            signer = provider.getSigner();
-            document.getElementById('connect').innerHTML = "Disconnect";
+        const connectButton = document.getElementById("connect");
+        const disconnectButton = document.getElementById("disconnect");
+    
+        if (localStorage.getItem("signedIn") == "true") {
+            connectButton.style.display = "none";
+            disconnectButton.style.display = "block";
+        }
+        connectButton.addEventListener("click", async () => {
+            await provider.send("eth_requestAccounts", []);
+            localStorage.setItem("signedIn", "true");
+            connectButton.style.display = "none";
+            disconnectButton.style.display = "block";
+        });
+        disconnectButton.addEventListener("click", () => {
+            localStorage.setItem("signedIn", "");
+            connectButton.style.display = "block";
+            disconnectButton.style.display = "none";
         })
+        var signer = await provider.getSigner();
 
-            const endpoint = 'https://api.nft.storage' // the default
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDEzRUNiM2JkNTg0ZDY0REExRTQ5QTNGMTUxMWM2MTYxMDc3OWI2QUIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0MDE1ODA5NTA0NSwibmFtZSI6Im5mdEhhY2sifQ.oKwSim4KHdU7Nh30fvxaCCjTLryTV0lItRdM4idE994' // your API key from https://nft.storage/manage
+        const endpoint = 'https://api.nft.storage' // the default
+        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDEzRUNiM2JkNTg0ZDY0REExRTQ5QTNGMTUxMWM2MTYxMDc3OWI2QUIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0MDE1ODA5NTA0NSwibmFtZSI6Im5mdEhhY2sifQ.oKwSim4KHdU7Nh30fvxaCCjTLryTV0lItRdM4idE994' // your API key from https://nft.storage/manage
 
             //Display image preview
             const image = document.getElementById('image')
@@ -86,11 +102,19 @@
 
             document.getElementById("myForm").addEventListener('submit', async (event) => {
                 event.preventDefault()
+                if(localStorage.getItem("signedIn") == "") {
+                    alert("Please connect wallet first!");
+                    return;
+                }
                 const title = event.target.elements.title.value
                 const description = event.target.elements.description.value
-                const file = event.target.elements.image.files[0]
+                const file = event.target.elements.image.files[0] || null
                 const status = document.getElementById('status')
                 
+                if (!title || !description || !file) {
+                    return;
+                }
+
                 const storage = new NFTStorage({ endpoint, token })
                 status.innerHTML = "Uploading token metadata to ipfs..."
                 const metadata = await storage.store({
@@ -99,19 +123,24 @@
                     image: file
                 })
                 console.log('IPFS URL for the metadata:', metadata.url)
-                const contract = new ethers.Contract(nftAddress, nftAbi, provider);
-                var signer = provider.getSigner()
-                const contract_ = new ethers.Contract(nftAddress, nftAbi, signer);
+                const signer = provider.getSigner()
+                const contract = new ethers.Contract(nftAddress, nftAbi, signer);
                 const totalSupply = await contract.totalSupply();
                 status.innerHTML = "Minting Token...";
-                var sendPromise = await contract_.safeMint(metadata.url);
-                //var sendPromise = contract.safeMint('ipfs://bafyreihl7ecqdwemyimhcqkxa2t4vywjy5anbwsqhflnokk5k46hw6nhgq/metadata.json');
-
-                const res = sendPromise.wait();
-                status.innerHTML = "Token succesfully minted, your token id is" + totalSupply;
-                const link = document.getElementById('link');
-                link.href = "https://testnets.opensea.io/assets/mumbai/" + nftAddress + '/' + totalSupply;
-                link.innerHTML = "View on etherscan"
+                try {
+                    var sendPromise = await contract.safeMint(metadata.url);
+                    const res = await sendPromise.wait();
+                    status.innerHTML = "Token succesfully minted, your token id is " + totalSupply;
+                    const explorer = document.getElementById('explorer');
+                    explorer.href = "https://mumbai.polygonscan.com/address/" + nftAddress + "#readContract";
+                    explorer.innerHTML = "View on explorer";
+                    const opensea = document.getElementById('opensea');
+                    opensea.href = "https://testnets.opensea.io/assets/mumbai/" + nftAddress + '/' + totalSupply;
+                    opensea.innerHTML = "View on opensea";
+                } catch(e) {
+                    status.innerHTML = "Failed to connect!"
+                    console.log(e);
+                }
             })
     </script>
     <footer>
