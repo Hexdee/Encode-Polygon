@@ -102,7 +102,7 @@
 
             document.getElementById("myForm").addEventListener('submit', async (event) => {
                 event.preventDefault()
-                if(localStorage.getItem("signedIn") == "") {
+                if(localStorage.getItem("signedIn") != "true") {
                     alert("Please connect wallet first!");
                     return;
                 }
