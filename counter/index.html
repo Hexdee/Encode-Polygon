@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./styles.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter</title>
+</head>
+<body>
+    <header>
+        <h1 class='title'>Counter</h1>
+            <button class='App-button' id="disconnect" >Disconnect</button>
+            <button class='App-button' id="connect" >Connect Wallet</button>
+    </header>
+    <main>
+        <div class='counter'>
+            <p id='count'></p>
+        </div>
+        <div class='counter-buttons'>
+            <button class='App-button' id="increase">Increase</button>
+            <button class='App-button' id="decrease">Decrease</button>
+        </div>
+        <button class='App-button' id="reset">Reset</button>
+    </main>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" ></script>
+    <script type="module">
+        var counterAddress = '0x25F074f859C798c66a5C107aac977Ab93E361657';
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const counterAbi = [
+    {
+      "inputs": [],
+      "name": "count",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "decrease",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "increase",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "reset",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+ 
+        const counterContract = new ethers.Contract(counterAddress, counterAbi, provider);
+        async function getCount() {
+            const count = await counterContract.count();
+            document.getElementById("count").innerHTML = count;
+        }
+        const connectButton = document.getElementById("connect");
+        const disconnectButton = document.getElementById("disconnect");
+    
+        if (localStorage.getItem("signedIn") == "true") {
+            connectButton.style.display = "none";
+            disconnectButton.style.display = "block";
+            getCount();
+        }
+        connectButton.addEventListener("click", async () => {
+            await provider.send("eth_requestAccounts", []);
+            localStorage.setItem("signedIn", "true");
+            connectButton.style.display = "none";
+            disconnectButton.style.display = "block";
+        });
+        disconnectButton.addEventListener("click", () => {
+            localStorage.setItem("signedIn", "");
+            connectButton.style.display = "block";
+            disconnectButton.style.display = "none";
+        })
+        document.getElementById("increase").addEventListener("click", async () => {
+            const counter = new ethers.Contract(counterAddress, counterAbi, provider.getSigner());
+            const tx = await counter.increase();
+            await tx.wait();
+            location.reload();
+        })
+
+        document.getElementById("decrease").addEventListener("click", async () => {
+            const counter = new ethers.Contract(counterAddress, counterAbi, provider.getSigner());
+            const tx = await counter.decrease();
+            await tx.wait();
+            location.reload();
+        })
+
+        document.getElementById("reset").addEventListener("click", async () => {
+            const counter = new ethers.Contract(counterAddress, counterAbi, provider.getSigner());
+            const tx = await counter.reset();
+            await tx.wait();
+            location.reload();
+        })
+
+    </script>
+</body>
+</html>

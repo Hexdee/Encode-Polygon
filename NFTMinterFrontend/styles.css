@@ -129,9 +129,18 @@ main .signer {
     color: orange;
 }
 
-#status {
+#status, #gas {
     margin-top: -16px;
     font-size: 14px;
+}
+
+#gas {
+    color: blue;
+    text-decoration: underline;
+}
+
+#gas:hover {
+    background-color: orange;
 }
 
 #explorer {
