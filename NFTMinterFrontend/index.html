@@ -24,6 +24,7 @@
             <label for="description">Description:</label>
             <input type="text" id="description" placeholder="Enter description">
             <input type="submit" value="Mint">
+            <p id="gas">gas free mint ?</p>
             <p id="status"></p>
             <a id="explorer"></a>
             <a id="opensea"></a>
@@ -91,18 +92,21 @@
 
             //Display image preview
             const image = document.getElementById('image')
-            image.addEventListener("change", function () {
+            function showImage() {
                 const reader = new FileReader();
                 reader.addEventListener("load", () => {
                     const uploaded_image = reader.result
                     document.getElementById('display_image').style.backgroundImage = `url(${uploaded_image})`
                 })
                 reader.readAsDataURL(this.files[0])
+            }
+            image.addEventListener("change", function () {
+                showImage();
             })
 
             document.getElementById("myForm").addEventListener('submit', async (event) => {
                 event.preventDefault()
-                if(localStorage.getItem("signedIn") == "") {
+                if(localStorage.getItem("signedIn") != "true") {
                     alert("Please connect wallet first!");
                     return;
                 }
