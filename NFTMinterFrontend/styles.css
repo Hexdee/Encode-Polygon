@@ -135,12 +135,13 @@ main .signer {
 }
 
 #gas {
-    color: blue;
+    color: orange;
     text-decoration: underline;
 }
 
 #gas:hover {
-    background-color: orange;
+    color: red;
+    cursor: pointer;
 }
 
 #explorer {

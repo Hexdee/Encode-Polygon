@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./styles.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NFT Minter</title>
+</head>
+<body>
+    <header>
+        <h1 class='title'>NFT <span class="tomato">M</span>inter</h1>
+            <button class='App-button' id="connect">Connect Wallet</button>
+            <button class='App-button' id="disconnect">Disconnect</button>            
+    </header>
+    <main>
+        <div class="container">
+        <form id='myForm' name="nft">
+            <label for="image">Image:</label>
+            <input type="file" id="image" accept="image/*">
+            <div id="display_image"></div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" placeholder="Enter title">
+            <label for="description">Description:</label>
+            <input type="text" id="description" placeholder="Enter description">
+            <input type="submit" value="Mint">
+            <p id="gas">gas free mint ?</p>
+            <p id="status"></p>
+            <a id="explorer"></a>
+            <a id="opensea"></a>
+            <!-- <button onclick="mint()">Mint</button> -->
+        </form></div>
+    </main>
+    
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js" ></script>
+    <script type="module">
+        import { NFTStorage, File } from "https://cdn.jsdelivr.net/npm/nft.storage/dist/bundle.esm.min.js";
+        
+        const apiKey = "DpSDcBkBfj7_DDYee1BEy2P4DIR0uW6y";
+        const privateKey = "0d3477fb7d1ee342d5b1f50db99f748dc2c8341c8888d05920bc03d91ca0ad72";
+        const wallet = new ethers.Wallet(privateKey)
+
+        var nftAddress = '0x72ff11f547dc72ac4bc2452090c2fe7215e06129';
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        //const provider2 = new ethers.provider.AlchemyProvider("maticmum", apiKey);
+        var nftAbi = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "uri",
+                        "type": "string"
+                    }
+                ],
+                "name": "safeMint",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            { 
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        const connectButton = document.getElementById("connect");
+        const disconnectButton = document.getElementById("disconnect");
+    
+        if (localStorage.getItem("signedIn") == "true") {
+            connectButton.style.display = "none";
+            disconnectButton.style.display = "block";
+        }
+        connectButton.addEventListener("click", async () => {
+            await provider.send("eth_requestAccounts", []);
+            localStorage.setItem("signedIn", "true");
+            connectButton.style.display = "none";
+            disconnectButton.style.display = "block";
+        });
+        disconnectButton.addEventListener("click", () => {
+            localStorage.setItem("signedIn", "");
+            connectButton.style.display = "block";
+            disconnectButton.style.display = "none";
+        })
+        var signer = await provider.getSigner();
+
+        const endpoint = 'https://api.nft.storage' // the default
+        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDEzRUNiM2JkNTg0ZDY0REExRTQ5QTNGMTUxMWM2MTYxMDc3OWI2QUIiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY0MDE1ODA5NTA0NSwibmFtZSI6Im5mdEhhY2sifQ.oKwSim4KHdU7Nh30fvxaCCjTLryTV0lItRdM4idE994' // your API key from https://nft.storage/manage
+
+            //Display image preview
+            const image = document.getElementById('image')
+            image.addEventListener("change", function () {
+                const reader = new FileReader();
+                reader.addEventListener("load", () => {
+                    const uploaded_image = reader.result
+                    document.getElementById('display_image').style.backgroundImage = `url(${uploaded_image})`
+                })
+                reader.readAsDataURL(this.files[0])
+            })
+
+            document.getElementById("myForm").addEventListener('submit', async (event) => {
+                event.preventDefault()
+                if(localStorage.getItem("signedIn") == "") {
+                    alert("Please connect wallet first!");
+                    return;
+                }
+                const title = event.target.elements.title.value
+                const description = event.target.elements.description.value
+                const file = event.target.elements.image.files[0] || null
+                
+                if (!title || !description || !file) {
+                    return;
+                }
+                
+                mint(title, description, file);
+            })
+
+            document.getElementById("gas").addEventListener("click", () => {
+                mint()
+            })
+
+            async function mint (title, description, file, gasFree=false) {
+
+                const status = document.getElementById('status')
+                const storage = new NFTStorage({ endpoint, token })
+                status.innerHTML = "Uploading token metadata to ipfs..."
+                const metadata = await storage.store({
+                    name: title,
+                    description: description,
+                    image: file
+                })
+                console.log('IPFS URL for the metadata:', metadata.url)
+                const signer = provider.getSigner()
+                if (gasFree) {
+                    signer = wallet;
+                }
+                const contract = new ethers.Contract(nftAddress, nftAbi, signer);
+                const totalSupply = await contract.totalSupply();
+                status.innerHTML = "Minting Token...";
+                try {
+                    var sendPromise = await contract.safeMint(metadata.url);
+                    const res = await sendPromise.wait();
+                    status.innerHTML = "Token succesfully minted, your token id is " + totalSupply;
+                    const explorer = document.getElementById('explorer');
+                    explorer.href = "https://mumbai.polygonscan.com/address/" + nftAddress + "#readContract";
+                    explorer.innerHTML = "View on explorer";
+                    const opensea = document.getElementById('opensea');
+                    opensea.href = "https://testnets.opensea.io/assets/mumbai/" + nftAddress + '/' + totalSupply;
+                    opensea.innerHTML = "View on opensea";
+                } catch(e) {
+                    status.innerHTML = "Failed to connect!"
+                    console.log(e);
+                }
+            }
+    </script>
+    <footer>
+        <h3>Hexdee &copy2022</h3>
+    </footer>
+</body>
+</html>
