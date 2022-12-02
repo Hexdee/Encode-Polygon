@@ -2,7 +2,7 @@
 
 ## Running your own nft minter
 
-Update `line 38` with your nft contract address
+Update `line 38` of [index.html](./index.html) with your nft contract address
 ```javascript
 var nftAddress = 'Your nft contract address here';
 ```
