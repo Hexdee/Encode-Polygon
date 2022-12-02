@@ -37,7 +37,7 @@ npx hardhat compile
 ### Deploy to mumbai testnet
 
 ```
-npx hardhat run scripts/mintNFTs.js
+npx hardhat run scripts/deploy.js
 ```
 
 ### Verify on polygonscan
@@ -46,10 +46,3 @@ npx hardhat run scripts/mintNFTs.js
 npx hardhat verify {DEPLOYED_CONTRACT_ADDRESS}
 ```
 
-### Upload your NFT media to IPFS
-
-You can also use `scripts/upload.js` to upload your nft medias to ipfs
-
-```
-npx hardhat run scripts/upload.js
-```
