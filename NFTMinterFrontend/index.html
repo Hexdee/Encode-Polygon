@@ -25,6 +25,7 @@
             <input type="text" id="description" placeholder="Enter description">
             <input type="submit" value="Mint">
             <p id="status"></p>
+            <p id="ipfs"></p>
             <a id="explorer"></a>
             <a id="opensea"></a>
             <!-- <button onclick="mint()">Mint</button> -->
@@ -109,7 +110,8 @@
                 const title = event.target.elements.title.value
                 const description = event.target.elements.description.value
                 const file = event.target.elements.image.files[0] || null
-                const status = document.getElementById('status')
+                const status = document.getElementById('status');
+                const ipfs = document.getElementById('ipfs');
                 
                 if (!title || !description || !file) {
                     return;
@@ -123,6 +125,8 @@
                     image: file
                 })
                 console.log('IPFS URL for the metadata:', metadata.url)
+                ipfs.innerHTML = 'Token URI:' + metadata.url;
+                status.innerHTML = "Minting token...";
                 const signer = provider.getSigner()
                 const contract = new ethers.Contract(nftAddress, nftAbi, signer);
                 const totalSupply = await contract.totalSupply();
